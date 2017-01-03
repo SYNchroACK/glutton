@@ -1,10 +1,13 @@
-package glutton
+package protocols
 
 import (
-	"errors"
 	"log"
 	"net"
 	"time"
+	"strconv"
+	"errors"
+	
+	"github.com/hectane/go-nonblockingchan"
 )
 
 type address struct {
@@ -57,8 +60,6 @@ func TCPClient(addr string) *net.TCPConn {
 
 // ProxyServer handles the proxy connections
 func ProxyServer(id int64, srvConn, cliConn *net.TCPConn) (string, error) {
-	id = id
-
 	serverClosed := make(chan struct{}, 1)
 	clientClosed := make(chan struct{}, 1)
 
@@ -101,7 +102,7 @@ func TCPBroker(dst, src net.Conn, srcClosed chan struct{}) {
 }
 
 func transfer(dst writer, src reader, addr interface{}) (int64, error) {
-	v := addr.(address)
+	// v := addr.(address)
 	if wt, ok := src.(writerTo); ok {
 		return wt.WriteTo(dst)
 	}
@@ -121,8 +122,7 @@ func transfer(dst writer, src reader, addr interface{}) (int64, error) {
 		nr, readErr := src.Read(buf)
 
 		if nr > 0 {
-      nw, writeErr := dst.Write(buf[0:nr])
-			log.Printf("[%v] [TCP][%v -> %v]\n", id, v.srcAddr, v.dstAddr)
+			nw, writeErr := dst.Write(buf[0:nr])
 			if nw > 0 {
 				written += int64(nw)
 			}
@@ -147,4 +147,43 @@ func transfer(dst writer, src reader, addr interface{}) (int64, error) {
 		}
 	}
 	return written, err
+}
+
+// GetTCPDesPort return Destination port for TCP
+func GetTCPDesPort(p []string, ch *nbc.NonBlockingChan) int {
+	if ch.Len() == 0 {
+		time.Sleep(10 * time.Millisecond)
+		if ch.Len() == 0 {
+			log.Println("TCP Channel is empty!")
+			return -1
+		}
+	}
+
+	// Receiving conntrack logs from channel
+	stream, ok := <-ch.Recv
+
+	for ok {
+		c, flag := stream.([]string)
+		if !flag {
+			log.Println("Error. TCP Invalid log! glutton.go: stream.([]string) failed.")
+			stream, ok = <-ch.Recv
+			continue
+		}
+
+		if c[1] == p[0] && c[3] == p[1] {
+
+			dp, err := strconv.Atoi(c[4])
+			if err != nil {
+				log.Println("Error. TCP Invalid destination port! glutton.go strconv.Atoi()")
+				return -1
+			}
+			return dp
+		}
+		if ch.Len() == 0 {
+			log.Println("TCP No logs found!")
+			return -1
+		}
+		stream, ok = <-ch.Recv
+	}
+	return -1
 }

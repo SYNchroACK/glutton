@@ -1,4 +1,4 @@
-package glutton
+package protocols
 
 import (
 	"io"
@@ -6,7 +6,7 @@ import (
 	"net"
 )
 
-func handleDefault(conn net.Conn) error {
+func HandleDefault(conn net.Conn) error {
 	defer conn.Close()
 	log.Println("Handling connection with default handler...")
 	buf := make([]byte, 0, 81920)

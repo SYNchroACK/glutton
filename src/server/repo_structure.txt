@@ -1,0 +1,26 @@
+-rw-r--r-- 1 root root 2054 Jan  3 03:03 README.md
+-rw-r--r-- 1 root root 1075 Jan  3 03:03 LICENSE
+
+-rw-r--r-- 1 root root  205 Jan  3 03:03 Dockerfile -> automation
+-rw-r--r-- 1 root root  229 Jan  3 03:03 Makefile
+
+drwxr-xr-x 2 root root 4096 Jan  3 03:03 server -> main binary
+drwxr-xr-x 2 root root 4096 Jan  3 03:03 config -> /etc/
+drwxr-xr-x 2 root root 4096 Jan  3 03:03 logger -> log library
+
+-rw-r--r-- 1 root root 3822 Jan  3 03:03 glutton.go
+-rw-r--r-- 1 root root  256 Jan  3 03:03 glutton_test.go
+
+-rw-r--r-- 1 root root 1879 Jan  3 03:03 connections.go -> connections_handling
+-rw-r--r-- 1 root root 2715 Jan  3 03:03 tcp_broker.go
+-rw-r--r-- 1 root root 1976 Jan  3 03:03 udp_broker.go
+
+-rw-r--r-- 1 root root 3770 Jan  3 03:03 listeners.go - create server sockets
+-rw-r--r-- 1 root root 2261 Jan  3 03:03 conntrack.go - connections monitor
+
+-rw-r--r-- 1 root root  456 Jan  3 03:03 default.go
+-rw-r--r-- 1 root root  313 Jan  3 03:03 http.go
+-rw-r--r-- 1 root root 2113 Jan  3 03:03 telnet.go
+
+
+-rw-r--r-- 1 root root  198 Jan  3 03:03 utils.go
