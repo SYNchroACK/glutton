@@ -20,7 +20,7 @@ type UDPConn struct {
 }
 
 // UDPBroker is handling and UDP connection
-func (c *UDPConn) UDPBroker(counter ConnCounter) {
+func (c *UDPConn) UDPBroker() { //counter ConnCounter) {
 	defer c.conn.Close()
 
 	srcAddr := c.addr.String()
@@ -35,7 +35,11 @@ func (c *UDPConn) UDPBroker(counter ConnCounter) {
 		//		log.Println("Warning. Packet dropped! [UDP] udp_broker.go desPort == -1")
 		counter.reqDropped()
 	}
-	host := portConf.Ports[dp]
+
+	// FIXME: portConf not accessible from protocols package and
+	// this code should be moved to listeners.go like 'handleTCPClient'
+	host := nil // portConf.Ports[dp] 
+	
 	if len(host) < 2 {
 		//log.Println("[UDP] No host found. Packet dropped!")
 		log.Printf("[UDP] [%v -> UDP:%v] Payload: %v", c.addr, dp, string(c.buffer[0:c.n]))

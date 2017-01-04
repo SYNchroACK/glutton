@@ -145,7 +145,7 @@ func handleUDPClient(conn *net.UDPConn, ch *nbc.NonBlockingChan) {
 		}
 
 		c := UDPConn{conn, addr, ch, b, n}
-		go c.UDPBroker(&counters)
+		go c.UDPBroker(portConf) //, &counters)
 	}
 }
 
