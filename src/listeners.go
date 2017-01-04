@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/hectane/go-nonblockingchan"
-	"github.com/mushorg/glutton/protocols"
+	"github.com/synchroack/glutton/protocols"
 )
 
 var counters Connections

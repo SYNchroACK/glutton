@@ -14,8 +14,8 @@ import (
 
 	"github.com/hectane/go-nonblockingchan"
 
-	"github.com/mushorg/glutton"
-	"github.com/mushorg/glutton/logger"
+	"github.com/synchroack/glutton"
+	"github.com/synchroack/glutton/logger"
 )
 
 // SetIPTables modifies to iptables

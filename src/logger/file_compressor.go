@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/mushorg/glutton"
+	"github.com/synchroack/glutton"
 	"pkg.re/essentialkaos/z7.v2"
 )
 
