@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/hectane/go-nonblockingchan"
-        "github.com/mushorg/glutton/protocols"
+	"github.com/mushorg/glutton/protocols"
 )
 
 var counters Connections
@@ -39,40 +39,44 @@ func handleTCPClient(conn net.Conn, ch *nbc.NonBlockingChan, counter ConnCounter
 	// Splitting address to compare with conntrack logs
 	srcAddr := conn.RemoteAddr().String()
 	if srcAddr == "<nil>" {
-		log.Println("Error. Address:port == nil glutton_server.go conn.RemoteAddr().String()")
+		log.Println("Error: handleTCPClient - Address:port == nil - conn.RemoteAddr().String()")
 		return
 	}
 
 	addr := strings.Split(srcAddr, ":")
 
-	dp := GetTCPDesPort(addr, ch)
+	dp := protocols.GetTCPDesPort(addr, ch)
 
 	if dp == -1 {
-		log.Println("Warning. Packet dropped! [TCP] glutton_server.go desPort == -1")
+		log.Println("Warning: Packet dropped! [TCP] destPort == -1")
 		return
 	}
 
 	// TCP client for destination server
-	handler := GetHandler(dp)
+	// CHANGED: handler := GetHandler(dp)
+	handler := portConf.Ports[dp]
+
 	if len(handler) < 2 {
 		log.Println("No explicit handler found")
-		handler = GetDefaultHandler()
+
+		// CHANGED: handler = GetDefaultHandler()
+		handler = portConf.Default
+
 		if handler == "" {
 			log.Println("No default handler found. Packet dropped!")
 			return
 		}
-
 	}
 
 	if strings.HasPrefix(handler, "handle") {
 		if strings.HasSuffix(handler, "telnet") {
-			log.Printf("New connection from %s to port %d -> glutton:telnet\n", addr[0], dp)
+			log.Printf("New TCP connection from %s to port %d -> glutton:telnet\n", addr[0], dp)
 			counter.incrCon()
-			handleTelnet(time.Now().Unix(), conn)
+			protocols.HandleTelnet(time.Now().Unix(), conn)
 			counter.decrCon()
 		}
 		if strings.HasSuffix(handler, "default") {
-			log.Printf("New connection from %s to port %d -> glutton:default\n", addr[0], dp)
+			log.Printf("New TCP connection from %s to port %d -> glutton:default\n", addr[0], dp)
 			counter.incrCon()
 			bufConn := newBufferedConn(conn)
 			snip, err := bufConn.Peek(4)
@@ -82,25 +86,25 @@ func handleTCPClient(conn net.Conn, ch *nbc.NonBlockingChan, counter ConnCounter
 			httpMap := map[string]bool{"GET ": true, "POST": true, "HEAD": true}
 			if _, ok := httpMap[string(snip)]; ok == true {
 				log.Println("Handling HTTP")
-				handleHTTP(bufConn)
+				protocols.HandleHTTP(bufConn)
 			} else {
-				handleDefault(conn)
+				protocols.HandleDefault(conn)
 			}
 			counter.decrCon()
 		}
 	}
 
 	if strings.HasPrefix(handler, "proxy") {
-		proxyConn := TCPClient(handler[6:])
+		proxyConn := protocols.TCPClient(handler[6:])
 		if proxyConn == nil {
 			return
 		}
 
-		log.Printf("New connection from %s to port %d -> glutton:Proxy\n", addr[0], dp)
+		log.Printf("New TCP connection from %s to port %d -> glutton:Proxy\n", addr[0], dp)
 		counter.incrCon()
 
 		// Data Transfer between Connections
-		clossedBy, err := ProxyServer(time.Now().Unix(), conn.(*net.TCPConn), proxyConn)
+		clossedBy, err := protocols.ProxyServer(time.Now().Unix(), conn.(*net.TCPConn), proxyConn)
 		counter.connectionClosed(srcAddr, handler[6:], clossedBy, err)
 	}
 }

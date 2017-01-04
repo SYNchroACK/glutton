@@ -65,16 +65,6 @@ func LoadPorts(confPath string) {
 
 }
 
-// GetHandler returns destination address of the service to redirect traffic
-func GetHandler(p int) string {
-	return portConf.Ports[p]
-}
-
-// GetDefaultHandler returns the default handler or empty string
-func GetDefaultHandler() string {
-	return portConf.Default
-}
-
 // GetTCPDesPort return Destination port for TCP
 func GetTCPDesPort(p []string, ch *nbc.NonBlockingChan) int {
 	if ch.Len() == 0 {
@@ -163,10 +153,4 @@ func GetUDPDesPort(p []string, ch *nbc.NonBlockingChan) int {
 		unknown = p
 	}
 	return -1
-}
-
-// GetProtocol (80, "tcp")
-func GetProtocol(port int, transport string) *netdb.Servent {
-	prot := netdb.GetProtoByName(transport)
-	return netdb.GetServByPort(port, prot)
 }
