@@ -3,6 +3,7 @@ package protocols
 import (
 	"log"
 	"net"
+	"strings"
 	"time"
 	"strconv"
 
@@ -19,7 +20,7 @@ type UDPConn struct {
 }
 
 // UDPBroker is handling and UDP connection
-/*func (c *UDPConn) UDPBroker(counter ConnCounter) {
+func (c *UDPConn) UDPBroker(counter ConnCounter) {
 	defer c.conn.Close()
 
 	srcAddr := c.addr.String()
@@ -80,7 +81,6 @@ type UDPConn struct {
 	}
 	counter.reqAccepted()
 }
-*/
 
 // GetUDPDesPort return Destination port for UDP
 func GetUDPDesPort(p []string, ch *nbc.NonBlockingChan) int {

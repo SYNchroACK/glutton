@@ -4,8 +4,8 @@ import (
 	"log"
 	"net"
 	"time"
-	"strconv"
 	"errors"
+	"strconv"
 	
 	"github.com/hectane/go-nonblockingchan"
 )
